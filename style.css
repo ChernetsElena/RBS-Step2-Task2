@@ -1,0 +1,72 @@
+
+.title {
+    font-size: 20px;
+    text-align: center;
+}
+
+.item {
+    width: 600px;
+    border: none;
+   
+}
+
+.item-title {
+    width: 300px;
+    border: none;
+    display: flex;
+    justify-content: center;
+    cursor: default;
+}
+
+.item-count{
+    text-align: center;
+    width: 200px;
+    cursor: default;
+}
+
+.item-price {
+    text-align: center;
+    width: 200px;
+    cursor: default;
+}
+
+.content {
+    margin-bottom: 5px;
+    display: flex;
+    justify-content: center;
+}
+
+.container {
+    display: inline-block;
+    align-content: center;
+}
+
+.product-row {
+    margin-bottom: 5px;
+    display: flex;
+}
+
+.row {
+    margin-bottom: 5px;
+    display: flex;
+}
+
+.cost-container {
+    font-size: 16px;
+    margin-top: 100px;
+} 
+
+.cost {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+} 
+
+.cost-title {
+    text-align: center;
+}
+
+.product {
+    background-color: aqua;
+    border-radius: 5px;
+}
