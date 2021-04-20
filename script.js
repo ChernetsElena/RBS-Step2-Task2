@@ -22,103 +22,129 @@ var basket = [];
 
 
 webix.ready(function(){
+	webix.ui({
+
+		rows: [
+			({
+				cols: [
+					({
+						view:"datatable",
+						container: "store", 
+						id:"storeTable",
+						css: "table",
+						columns:[
+							{ id:"title", header:"Название", fillspace:true,  width:200},
+							{ id:"count", header:"Количество", width:150 },
+							{ id:"price", header:"Цена", width:150 }
+						],
+						select: "row",
+						autoheight: true,
+						autowidth: true,
+						on:{	
+							onAfterSelect: function(){
+								productId = $$('storeTable').getSelectedId();
+								productTitle = $$('storeTable').getItem(productId).title;
+								
+								incrementElement(basket, store, productTitle);
+								decrementElement(store, productTitle);
+								
+								$$('storeTable').clearSelection();
+								
+								refreshTable($$('storeTable'), store);
+								refreshTable($$('basketTable'), basket);
+								
+								$$('cost').define('template', getCost(basket));
+								$$('cost').refresh();
+							}
+						},		
+						data:store,
+					}),
 				
-				storeTable = webix.ui({
-					view:"datatable",
-					container: "store", 
-					id:"table",
-					css: "table",
-					columns:[
-						{ id:"title", header:"Название", fillspace:true},
-						{ id:"count", header:"Количество", width:150 },
-						{ id:"price", header:"Цена", width:150 }
-					],
-					select: "row",
-					autoheight: true,
-					autowidth: true,
-					on:{	
-						onAfterSelect: function(){
-							productId = storeTable.getSelectedId();
-							productTitle = storeTable.getItem(productId).title;
-							
-							incrementElement(basket, store, productTitle);
-							decrementElement(store, productTitle);
-							
-							storeTable.clearSelection();
-							
-							refreshTable(storeTable, store);
-							refreshTable(basketTable, basket);
-							
-							cost.define('template', getCost(basket));
-							cost.refresh();
-						}
-					},		
-					data:store,
-				}),
+					({				
+						container: "basket",
+						view:"datatable", 
+						id:"basketTable",
+						css: "table",
+						columns:[
+							{ id:"title", header:"Название", fillspace:true, width:200 },
+							{ id:"count", header:"Количество", width:150 },
+							{ id:"price", header:"Цена", width:150 }
+						],
+						select: "row",
+						autoheight: true,
+						autowidth: true,
+						on:{			
+							onAfterSelect: function(){
+								productId = $$('basketTable').getSelectedId();
+								productTitle = $$('basketTable').getItem(productId).title;
+								
+								incrementElement(store, basket, productTitle);
+								decrementElement(basket, productTitle);
+								
+								$$('basketTable').clearSelection();
 			
-				
-				basketTable = webix.ui({				
-					container: "basket",
-					view:"datatable", 
-					id:"table1",
-					css: "table",
-					columns:[
-						{ id:"title", header:"Название", fillspace:true },
-						{ id:"count", header:"Количество", width:150 },
-						{ id:"price", header:"Цена", width:150 }
-					],
-					select: "row",
-					autoheight: true,
-					autowidth: true,
-					on:{			
-						onAfterSelect: function(){
-							productId = basketTable.getSelectedId();
-							productTitle = basketTable.getItem(productId).title;
-							
-							incrementElement(store, basket, productTitle);
-							decrementElement(basket, productTitle);
-							
-							$$("table1").clearSelection();
+								refreshTable($$('storeTable'), store);
+								refreshTable($$('basketTable'), basket);
+								
+								$$('cost').define('template', getCost(basket));
+								$$('cost').refresh();
+							}
+						},		
+						data: basket,
+					})
+				],	
+			}),
 
-							refreshTable(storeTable, store);
-							refreshTable(basketTable, basket);
-							
-							cost.define('template', getCost(basket));
-							cost.refresh();
-						}
-					},		
-					data:basket,
-				}),	
+			({
+				container: "cost",
+				id: 'cost',
+				view: "template",
+				autoheight : true,
+				template: getCost(basket) || '0'
+			}),
 
+			({
+				view:"button", 
+				id:"button", 
+				value:"Добавить продукт", 
+				css:"webix_primary", 
+				autowidth: true,
+				on:{
+					onItemClick: function(){ 
+						$$('popup').show() 
+					}
+				}
+			}),
 
-				cost =  webix.ui({
-					container: "cost",
-					view: "template",
-					autoheight : true,
-					template: getCost(basket) || '0'
-				}),
-				
-
-				form = webix.ui({
-					view:"form",
-					id:"myform",
-					elements:[
-						 { view:"text", label:'Название', name:"title", width: 400},
-						 { view:"text", label:'Количество', name:"count", width: 400 },
-						 { view:"text", label:'Цена', name:"price", width: 400 },
-						 { view:"button", 
-						   value:"Добавить", 
-						   width: 300,
-						   on: {
-								onItemClick: function () {
-									addProduct(form.getValues());
-									//form.clear();
-								}	
-						   	}
-						}
-					]
-				})
-})
+			({
+			  container: 'window',
+			  view:"popup",
+			  id: 'popup',
+			  height:250,
+			  width:300,
+			  body:{
+				view:"form",
+				id:"form",
+				elements:[
+					 { view:"text", label:'Название', name:"title", width: 400},
+					 { view:"text", label:'Количество', name:"count", width: 400 },
+					 { view:"text", label:'Цена', name:"price", width: 400 },
+					 { view:"button", 
+					   value:"Добавить", 
+					   width: 300,
+					   on: {
+							onItemClick: function () {
+								addProduct($$('form').getValues());
+								//form.clear();
+							}	
+					   }
+					 }
+				]
+			  }
+			})
+		]
+	})	
+})		
 
 
 //функция уменьшающая количество продукта на 1 или удаляющая продукт из массива
@@ -233,11 +259,11 @@ function addProduct(values){
 			))
 		}
 		
-		refreshTable(storeTable, store);
-		refreshTable(basketTable, basket);
+		refreshTable($$('storeTable'), store);
+		refreshTable($$('basketTable'), basket);
 
-		cost.define('template', getCost(basket));
-		cost.refresh();
+		$$('cost').define('template', getCost(basket));
+		$$('cost').refresh();
 	}
 }
 
